@@ -23,6 +23,7 @@ jobs:
       - name: Extract env and version
         id: extractEnvAndVersion
         run: |
+          GIT_TAG=${GIT_TAG#refs/*/}
           if [ "$DOCKER_TAG" == "" ]; then
             part1=$(echo "$GIT_TAG" | cut -d'/' -f2)
             echo "TAG_VERSION=$part1" >> $GITHUB_OUTPUT

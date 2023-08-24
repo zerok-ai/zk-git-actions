@@ -24,6 +24,7 @@ jobs:
       - name: Extract cluster and version
         id: extractClusterAndVersion
         run: |
+          GIT_TAG=${GIT_TAG#refs/*/}
           if [ "$DOCKER_TAG" == "" ]; then
             part1=$(echo "$GIT_TAG" | cut -d'/' -f2)
             part2=$(echo "$GIT_TAG" | cut -d'/' -f3)
