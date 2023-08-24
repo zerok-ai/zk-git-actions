@@ -8,6 +8,13 @@ on:
         type: string
       ENVIRONMENT:
         type: string
+    outputs:
+      ENVIRONMENT:
+        description: "Extracted environment"
+        value: ${{ jobs.init.outputs.ENVIRONMENT }}
+      VERSION:
+        description: "Extracted version"
+        value: ${{ jobs.init.outputs.VERSION }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
   ENV: ${{ inputs.ENVIRONMENT }}
