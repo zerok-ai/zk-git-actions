@@ -8,6 +8,16 @@ on:
         type: string
       DOCKER_TAG:
         type: string
+    outputs:
+      ENVIRONMENT:
+        description: "Extracted environment"
+        value: ${{ jobs.init.outputs.ENVIRONMENT }}
+      VERSION:
+        description: "Extracted version"
+        value: ${{ jobs.init.outputs.VERSION }}
+      CLUSTERNAME:
+        description: "Extracted cluster name"
+        value: ${{ jobs.init.outputs.CLUSTERNAME }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
   GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
