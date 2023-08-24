@@ -1,4 +1,4 @@
-name: deploy-init
+name: dev-init
 on:
   workflow_call:
     inputs:
