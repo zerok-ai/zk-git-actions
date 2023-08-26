@@ -13,6 +13,9 @@ on:
       DOCKER_FILE_NAME:
         type: string
         default: 'Dockerfile'
+      ARTIFACT_NAME:
+        type: string
+        default: 'build-artifacts'
     secrets:
       GKE_SA_KEY:
         required: true
@@ -42,10 +45,9 @@ jobs:
         run: |
           gcloud auth configure-docker $DOCKER_REG --quiet
 
-
       - uses: actions/download-artifact@v3
         with:
-          name: build-artifacts
+          name: ${{ inputs.ARTIFACT_NAME }}
 
       - name: Docker build
         run: |-
