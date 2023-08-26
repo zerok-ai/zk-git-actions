@@ -24,9 +24,9 @@ on:
       HELM_BUCKET_URL:
         description: "Helm bucket url"
         value: ${{ jobs.init.outputs.HELM_BUCKET_URL }}
-      GCLOUD_PROJECT_ID:
+      PROJECT_ID:
         description: "Gcloud Project Id"
-        value: ${{ jobs.init.outputs.GCLOUD_PROJECT_ID }}
+        value: ${{ jobs.init.outputs.PROJECT_ID }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
   GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
@@ -41,7 +41,7 @@ jobs:
       VERSION: ${{ steps.extractClusterAndVersion.outputs.TAG_VERSION }}
       HELM_BUCKET_NAME: ${{ vars.PRIVATE_HELM_S3_BUCKET }}
       HELM_BUCKET_URL: ${{ vars.PRIVATE_HELM_S3_BUCKET_URL }}
-      GCLOUD_PROJECT_ID: ${{ vars.DEV_GCLOUD_PROJECT_ID }}
+      PROJECT_ID: ${{ vars.DEV_GCLOUD_PROJECT_ID }}
     steps:
       - name: Extract cluster and version
         id: extractClusterAndVersion
