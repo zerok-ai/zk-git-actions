@@ -26,6 +26,8 @@ jobs:
     outputs:
       ENVIRONMENT: ${{ steps.extractEnvAndVersion.outputs.TAG_ENV }}
       VERSION: ${{ steps.extractEnvAndVersion.outputs.TAG_VERSION }}
+      HELM_BUCKET_NAME: ${{ vars.PUBLIC_HELM_S3_BUCKET }}
+      HELM_BUCKET_URL: ${{ vars.PUBLIC_HELM_S3_BUCKET_URL }}
     steps:
       - name: Extract env and version
         id: extractEnvAndVersion

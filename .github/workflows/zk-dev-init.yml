@@ -30,6 +30,8 @@ jobs:
       ENVIRONMENT: ${{ steps.extractEnvironment.outputs.EXTRACTED_ENVIRONMENT }}
       CLUSTERNAME: ${{ steps.extractClusterAndVersion.outputs.TAG_CLUSTERNAME }}
       VERSION: ${{ steps.extractClusterAndVersion.outputs.TAG_VERSION }}
+      HELM_BUCKET_NAME: ${{ vars.PRIVATE_HELM_S3_BUCKET }}
+      HELM_BUCKET_URL: ${{ vars.PRIVATE_HELM_S3_BUCKET_URL }}
     steps:
       - name: Extract cluster and version
         id: extractClusterAndVersion
