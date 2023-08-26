@@ -1,40 +1,32 @@
-name: build-push
+name: docker-build-push
 on:
   workflow_call:
     inputs:
       VERSION:
         type: string
-        default: 'latest'
+      ENVIRONMENT:
+        type: string
       DOCKER_IDENTIFIER:
         type: string
-        default: 'prod'
       PROJECT_ID:
         type: string
-        required: true
-      DOCKER_REG:
-        type: string
-        required: true
-      DOCKER_REPO:
-        type: string
-        required: true
-      APP_NAME:
-        type: string
-        required: true
     secrets:
       GKE_SA_KEY:
         required: true
 env:
   GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
-  DOCKER_REG: ${{ inputs.DOCKER_REG }}
+  DOCKER_REG: ${{ vars.DOCKER_REG }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
-  DOCKER_REPO: ${{ inputs.DOCKER_REPO }}
-  APP_NAME: ${{ inputs.APP_NAME }}
+  DOCKER_REPO: ${{ vars.DOCKER_REPO }}
+  APP_NAME: ${{ vars.APP_NAME }}
   VERSION: ${{ inputs.VERSION }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
 
 jobs:
 
   docker-build:
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
     steps:
       - id: 'auth'
@@ -47,19 +39,23 @@ jobs:
         run: |
           gcloud auth configure-docker $DOCKER_REG --quiet
 
+
       - uses: actions/download-artifact@v3
         with:
           name: build-artifacts
 
       - name: Docker build
         run: |-
+          echo "DOCKER_TAG=$VERSION"
           docker build  --tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$GITHUB_SHA" .
 
       - name: Docker Tag
         run: |-
+          echo "DOCKER_TAG=$VERSION"
           docker tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$GITHUB_SHA" "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$VERSION"
 
       - name: Docker push
         run: |-
+          echo "DOCKER_TAG=$VERSION"
           docker push "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$GITHUB_SHA"
           docker push "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$VERSION"
