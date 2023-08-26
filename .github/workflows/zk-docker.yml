@@ -16,8 +16,9 @@ on:
       ARTIFACT_NAME:
         type: string
         default: 'build-artifacts'
-      APP_NAME:
+      APP_NAME_VAR:
         type: string
+        default: 'APP_NAME'
     secrets:
       GKE_SA_KEY:
         required: true
@@ -33,6 +34,8 @@ env:
 jobs:
 
   docker-build:
+    env:
+      APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
