@@ -16,6 +16,8 @@ on:
       ARTIFACT_NAME:
         type: string
         default: 'build-artifacts'
+      APP_NAME:
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
@@ -24,7 +26,7 @@ env:
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
-  APP_NAME: ${{ vars.APP_NAME }}
+  APP_NAME: ${{ inputs.APP_NAME }}
   VERSION: ${{ inputs.VERSION }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
 
