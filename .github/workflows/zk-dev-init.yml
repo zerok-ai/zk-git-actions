@@ -18,6 +18,12 @@ on:
       CLUSTERNAME:
         description: "Extracted cluster name"
         value: ${{ jobs.init.outputs.CLUSTERNAME }}
+      HELM_BUCKET_NAME:
+        description: "Helm bucket name"
+        value: ${{ jobs.init.outputs.HELM_BUCKET_NAME }}
+      HELM_BUCKET_URL:
+        description: "Helm bucket url"
+        value: ${{ jobs.init.outputs.HELM_BUCKET_URL }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
   GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
