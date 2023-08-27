@@ -24,8 +24,30 @@ on:
         required: true
 env:
   TOKEN: ${{ secrets.GITPAT }}
+  GOOS: ${{ vars.GOOS }}
+  GOARCH: ${{ vars.GOARCH }}
+  CGO_ENABLED: ${{ vars.CGO_ENABLED }}
+  GOPRIVATE: ${{ vars.GOPRIVATE }}
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+  PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  VERSION: ${{ inputs.VERSION }}
 
 jobs:
+
+  print-envs:
+    runs-on: zk-self-hosted
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: Check output
+        run: |
+          echo "GIT_TAG=$GIT_TAG"
+          echo "DOCKER_TAG=$VERSION"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          echo "DOCKER_REPO=$DOCKER_REPO"
+          echo "ENVIRONMENT=$ENVIRONMENT"
+          echo "PROJECT_ID=$PROJECT_ID"
+
   app-build:
     runs-on: zk-self-hosted
     environment:
