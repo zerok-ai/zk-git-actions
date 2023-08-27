@@ -6,7 +6,7 @@ on:
         type: string
       MAKE_TARGET:
         type: string
-        default: 'cicd-build'
+        default: 'ci-cd-build'
       VERSION:
         type: string
       DOCKER_IDENTIFIER:
