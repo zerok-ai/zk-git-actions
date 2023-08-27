@@ -31,6 +31,7 @@ env:
   GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   VERSION: ${{ inputs.VERSION }}
+  ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
 
 jobs:
 
