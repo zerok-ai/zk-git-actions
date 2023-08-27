@@ -53,6 +53,8 @@ jobs:
 
   app-build:
     runs-on: zk-self-hosted
+    env:
+      APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
