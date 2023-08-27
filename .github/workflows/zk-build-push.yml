@@ -24,14 +24,16 @@ on:
         required: true
 env:
   TOKEN: ${{ secrets.GITPAT }}
-  GOOS: ${{ vars.GOOS }}
-  GOARCH: ${{ vars.GOARCH }}
-  CGO_ENABLED: ${{ vars.CGO_ENABLED }}
-  GOPRIVATE: ${{ vars.GOPRIVATE }}
-  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
-  PROJECT_ID: ${{ inputs.PROJECT_ID }}
-  VERSION: ${{ inputs.VERSION }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+
+
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+  DOCKER_REG: ${{ vars.DOCKER_REG }}
+  PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  DOCKER_REPO: ${{ vars.DOCKER_REPO }}
+  APP_NAME: ${{ inputs.APP_NAME }}
+  VERSION: ${{ inputs.VERSION }}
+  DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
 
 jobs:
 
