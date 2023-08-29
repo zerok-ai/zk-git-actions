@@ -17,13 +17,21 @@ on:
       ZK_CLOUD_DOMAIN:
         type: string
         description: 'Zk cloud domain'
+    secrets:
+      GKE_SA_KEY:
+        required: true
 env:
   CLUSTERNAME: ${{ inputs.GKE_CLUSTER }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
   NAMESPACE: ${{ vars.NS }}
+  GKE_ZONE: ${{ vars.GKE_ZONE }}
   ZK_INIT_CONTAINER_REPO: ${{ vars.ZK_INIT_CONTAINER_REPO }}
   ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
+
+  DOCKER_REG: ${{ vars.DOCKER_REG }}
+  DOCKER_REPO: ${{ vars.DOCKER_REPO }}
+  APP_NAME: ${{ vars.APP_NAME }}
 jobs:
   deploy:
     env:
