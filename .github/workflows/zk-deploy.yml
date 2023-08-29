@@ -8,6 +8,8 @@ on:
       VERSION:
         type: string
         required: true
+      MIGRATION_VERSION:
+        type: string
       PROJECT_ID:
         type: string
         required: true
@@ -38,6 +40,7 @@ jobs:
     env:
       CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
       VERSION: ${{ inputs.VERSION }}
+      MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
       PROJECT_ID: ${{ inputs.PROJECT_ID }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
@@ -45,10 +48,15 @@ jobs:
     steps:
       - name: print-debug-vars
         run: |
-          echo "DOCKER_TAG=$VERSION"
-          echo "GITHUB_SHA=$GITHUB_SHA"
+          echo "VERSION=$VERSION"
+          echo "MIGRATION_VERSION=MIGRATION_VERSION"
+          echo "DOCKER_REG=$DOCKER_REG"
+          echo "PROJECT_ID=$PROJECT_ID"
           echo "DOCKER_REPO=$DOCKER_REPO"
-          echo "GKE_ZONE=$GKE_ZONE"
+          echo "CLUSTERNAME=$CLUSTERNAME"
+          echo "ZK_CLOUD_DOMAIN=$ZK_CLOUD_DOMAIN"
+          echo "ZK_INIT_CONTAINER_REPO=$ZK_INIT_CONTAINER_REPO"
+          echo "ZK_INIT_CONTAINER_TAG=$ZK_INIT_CONTAINER_TAG"
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -69,7 +77,7 @@ jobs:
         run: |-
           helm --install  \
           --set=image.tag=$VERSION \
-          --set=image.migrationTag=$VERSION \
+          --set=image.migrationTag=$MIGRATION_VERSION \
           --set=global.dockerBase=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$CLUSTERNAME \
           --set=global.zkcloud.host=$ZK_CLOUD_DOMAIN \
           --set=global.zkInitContainer.repo=$ZK_INIT_CONTAINER_REPO \
