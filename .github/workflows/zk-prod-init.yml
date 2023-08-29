@@ -50,7 +50,7 @@ jobs:
               echo "TAG_VERSION=$version" >> $GITHUB_OUTPUT
               echo "TAG_ENV=prod" >> $GITHUB_OUTPUT
             else
-              echo "invalid version tag. Tag should match semver pattern. Go to https://semver.org/ for more info"
+              echo "invalid version tag - ${version}. Tag should match semver pattern. Go to https://semver.org/ for more info"
               exit 1  # Exit with failure
             fi
           else

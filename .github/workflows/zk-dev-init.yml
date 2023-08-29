@@ -48,11 +48,16 @@ jobs:
         run: |
           GIT_TAG=${GIT_TAG#refs/*/}
           if [ "$DOCKER_TAG" == "" ]; then
-            part1=$(echo "$GIT_TAG" | cut -d'/' -f2)
-            part2=$(echo "$GIT_TAG" | cut -d'/' -f3)
-            echo "TAG_CLUSTERNAME=$part1" >> $GITHUB_OUTPUT
-            echo "TAG_VERSION=$part2" >> $GITHUB_OUTPUT
-            clusterName=$part1
+            clusterName=$(echo "$GIT_TAG" | cut -d'/' -f2)
+            version=$(echo "$GIT_TAG" | cut -d'/' -f3)
+            semver_pattern="^[0-9]+\.[0-9]+\.[0-9]+$"
+            if [[ $version =~ $semver_pattern ]]; then
+              echo "TAG_CLUSTERNAME=$clusterName" >> $GITHUB_OUTPUT
+              echo "TAG_VERSION=$version" >> $GITHUB_OUTPUT
+            else
+              echo "invalid version tag - ${version}. Tag should match semver pattern. Go to https://semver.org/ for more info"
+              exit 1  # Exit with failure
+            fi
           else
             echo "TAG_CLUSTERNAME=$GKE_CLUSTER" >> $GITHUB_OUTPUT
             echo "TAG_VERSION=$DOCKER_TAG" >> $GITHUB_OUTPUT
