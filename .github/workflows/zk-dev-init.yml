@@ -50,7 +50,7 @@ jobs:
           if [ "$DOCKER_TAG" == "" ]; then
             clusterName=$(echo "$GIT_TAG" | cut -d'/' -f2)
             version=$(echo "$GIT_TAG" | cut -d'/' -f3)
-            semver_pattern="^[0-9]+\.[0-9]+\.[0-9]+$"
+            semver_pattern="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$"
             if [[ $version =~ $semver_pattern ]]; then
               echo "TAG_CLUSTERNAME=$clusterName" >> $GITHUB_OUTPUT
               echo "TAG_VERSION=$version" >> $GITHUB_OUTPUT
