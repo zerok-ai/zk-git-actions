@@ -29,6 +29,7 @@ env:
   ZK_INIT_CONTAINER_REPO: ${{ vars.ZK_INIT_CONTAINER_REPO }}
   ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
 
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
   APP_NAME: ${{ vars.APP_NAME }}
@@ -53,7 +54,7 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
         with:
-          credentials_json: '${{ secrets.GKE_SA_KEY_DEV }}'
+          credentials_json: '${{ env.GKE_SA_KEY }}'
 
       - id: 'get-credentials'
         uses: 'google-github-actions/get-gke-credentials@v1'
