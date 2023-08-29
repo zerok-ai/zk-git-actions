@@ -19,6 +19,9 @@ on:
       ZK_CLOUD_DOMAIN:
         type: string
         description: 'Zk cloud domain'
+      NAMESPACE_VAR:
+        type: string
+        default: 'NAMESPACE'
     secrets:
       GKE_SA_KEY:
         required: true
@@ -28,7 +31,6 @@ env:
   VERSION: ${{ inputs.VERSION }}
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
   ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
-  NAMESPACE: ${{ vars.NAMESPACE }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
@@ -37,6 +39,7 @@ jobs:
   deploy:
     env:
       GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+      NAMESPACE: ${{ vars[format('{0}', inputs.NAMESPACE_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
