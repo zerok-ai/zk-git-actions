@@ -5,7 +5,7 @@ on:
       CLUSTERNAME:
         type: string
         required: true
-      VERSION:`
+      VERSION:
         type: string
         required: true
       PROJECT_ID:
