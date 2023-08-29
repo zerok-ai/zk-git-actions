@@ -1,0 +1,72 @@
+name: dev-init
+on:
+  workflow_call:
+    inputs:
+      CLUSTERNAME:
+        type: string
+        required: true
+      VERSION:`
+        type: string
+        required: true
+      PROJECT_ID:
+        type: string
+        required: true
+      ENVIRONMENT:
+        type: string
+        required: true
+      ZK_CLOUD_DOMAIN:
+        type: string
+        description: 'Zk cloud domain'
+env:
+  CLUSTERNAME: ${{ inputs.GKE_CLUSTER }}
+  PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
+  NAMESPACE: ${{ vars.NS }}
+  ZK_INIT_CONTAINER_REPO: ${{ vars.ZK_INIT_CONTAINER_REPO }}
+  ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
+jobs:
+  deploy:
+    needs: [ init,app-helm-build-push ]
+    env:
+      CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
+      VERSION: ${{ inputs.VERSION }}
+      PROJECT_ID: ${{ inputs.PROJECT_ID }}
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    runs-on: zk-self-hosted
+    steps:
+      - name: print-debug-vars
+        run: |
+          echo "DOCKER_TAG=$VERSION"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          echo "DOCKER_REPO=$DOCKER_REPO"
+          echo "GKE_ZONE=$GKE_ZONE"
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GKE_SA_KEY_DEV }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: '${{ env.CLUSTERNAME }}'
+          location: '${{ env.GKE_ZONE }}'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy
+        run: |-
+          helm --install  \
+          --set=image.tag=$VERSION \
+          --set=image.migrationTag=$VERSION \
+          --set=global.dockerBase=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$CLUSTERNAME \
+          --set=global.zkcloud.host=$ZK_CLOUD_DOMAIN \
+          --set=global.zkInitContainer.repo=$ZK_INIT_CONTAINER_REPO \
+          --set=global.zkInitContainer.tag=$ZK_INIT_CONTAINER_TAG \
+          upgrade $APP_NAME \
+           -f ./helm-charts/values.yaml ./helm-charts/ \
+           --create-namespace \
+           --namespace $NAMESPACE
