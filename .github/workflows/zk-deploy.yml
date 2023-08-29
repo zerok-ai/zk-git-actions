@@ -25,13 +25,11 @@ on:
 env:
   CLUSTERNAME: ${{ inputs.GKE_CLUSTER }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  VERSION: ${{ inputs.VERSION }}
+  MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
   ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
   NAMESPACE: ${{ vars.NS }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
-  ZK_INIT_CONTAINER_REPO: ${{ vars.ZK_INIT_CONTAINER_REPO }}
-  ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
-
-
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
   APP_NAME: ${{ vars.APP_NAME }}
@@ -65,8 +63,6 @@ jobs:
           --set=image.migrationTag=$MIGRATION_VERSION \
           --set=global.dockerBase=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$CLUSTERNAME \
           --set=global.zkcloud.host=$ZK_CLOUD_DOMAIN \
-          --set=global.zkInitContainer.repo=$ZK_INIT_CONTAINER_REPO \
-          --set=global.zkInitContainer.tag=$ZK_INIT_CONTAINER_TAG \
           upgrade $APP_NAME \
            -f ./helm-charts/values.yaml ./helm-charts/ \
            --create-namespace \
