@@ -44,9 +44,15 @@ jobs:
         run: |
           GIT_TAG=${GIT_TAG#refs/*/}
           if [ "$DOCKER_TAG" == "" ]; then
-            part1=$(echo "$GIT_TAG" | cut -d'/' -f2)
-            echo "TAG_VERSION=$part1" >> $GITHUB_OUTPUT
-            echo "TAG_ENV=prod" >> $GITHUB_OUTPUT
+            version=$(echo "$GIT_TAG" | cut -d'/' -f2)
+            semver_pattern="^[0-9]+\.[0-9]+\.[0-9]+$"
+            if [[ $version =~ $semver_pattern ]]; then
+              echo "TAG_VERSION=$version" >> $GITHUB_OUTPUT
+              echo "TAG_ENV=prod" >> $GITHUB_OUTPUT
+            else
+              echo "invalid version tag. Tag should match semver pattern. Go to https://semver.org/ for more info"
+              exit 1  # Exit with failure
+            fi
           else
             echo "TAG_VERSION=$DOCKER_TAG" >> $GITHUB_OUTPUT
             echo "TAG_ENV=$ENV" >> $GITHUB_OUTPUT
