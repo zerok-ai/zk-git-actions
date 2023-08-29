@@ -26,7 +26,6 @@ env:
   ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
 jobs:
   deploy:
-    needs: [ init,app-helm-build-push ]
     env:
       CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
       VERSION: ${{ inputs.VERSION }}
