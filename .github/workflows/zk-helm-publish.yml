@@ -49,15 +49,12 @@ jobs:
       - name: s3 sync repo
         run: aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/${{ vars.APP_NAME }} .
 
-      - name: docker-tag
+      - name: prepare-helm-values
         run: |-
-          chmod +x helm-charts/rename-docker-tag.sh
-          helm-charts/rename-docker-tag.sh $HELM_VERSION
-
-      - name: docker-repo
-        run: |-
-          chmod +x helm-charts/rename-docker-repo.sh
-          helm-charts/rename-docker-repo.sh $DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
+          DOCKER_REPO=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
+          perl -pi -e "s/tag: \"latest\"/tag: \"$HELM_VERSION\"/" helm-charts/values.yaml
+          perl -pi -e "s/migrationTag: \"latest\"/migrationTag: \"$HELM_VERSION\"/" helm-charts/values.yaml
+          perl -pi -e "s#dockerBase: \".*\"#dockerBase: \"$DOCKER_REPO\"#" helm-charts/values.yaml
 
       - name: Uploading Helm Charts (for deploy)
         uses: actions/upload-artifact@v3
