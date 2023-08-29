@@ -31,33 +31,18 @@ env:
   ZK_INIT_CONTAINER_REPO: ${{ vars.ZK_INIT_CONTAINER_REPO }}
   ZK_INIT_CONTAINER_TAG: ${{ vars.ZK_INIT_CONTAINER_TAG }}
 
-  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
   APP_NAME: ${{ vars.APP_NAME }}
 jobs:
   deploy:
     env:
-      CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
-      VERSION: ${{ inputs.VERSION }}
-      MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
-      PROJECT_ID: ${{ inputs.PROJECT_ID }}
+      GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
     steps:
-      - name: print-debug-vars
-        run: |
-          echo "VERSION=$VERSION"
-          echo "MIGRATION_VERSION=MIGRATION_VERSION"
-          echo "DOCKER_REG=$DOCKER_REG"
-          echo "PROJECT_ID=$PROJECT_ID"
-          echo "DOCKER_REPO=$DOCKER_REPO"
-          echo "CLUSTERNAME=$CLUSTERNAME"
-          echo "ZK_CLOUD_DOMAIN=$ZK_CLOUD_DOMAIN"
-          echo "ZK_INIT_CONTAINER_REPO=$ZK_INIT_CONTAINER_REPO"
-          echo "ZK_INIT_CONTAINER_TAG=$ZK_INIT_CONTAINER_TAG"
-
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
