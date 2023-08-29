@@ -22,6 +22,9 @@ on:
       NAMESPACE_VAR:
         type: string
         default: 'NAMESPACE'
+      APP_NAME_VAR:
+        type: string
+        default: 'APP_NAME'
     secrets:
       GKE_SA_KEY:
         required: true
@@ -29,17 +32,18 @@ env:
   CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   VERSION: ${{ inputs.VERSION }}
+  APP_NAME_VAR: ${{ inputs.APP_NAME_VAR }}
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
   ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
-  APP_NAME: ${{ vars.APP_NAME }}
 jobs:
   deploy:
     env:
       GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
       NAMESPACE: ${{ vars[format('{0}', inputs.NAMESPACE_VAR)] }}
+      APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
