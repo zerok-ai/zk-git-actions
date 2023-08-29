@@ -23,7 +23,7 @@ on:
       GKE_SA_KEY:
         required: true
 env:
-  CLUSTERNAME: ${{ inputs.GKE_CLUSTER }}
+  CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   VERSION: ${{ inputs.VERSION }}
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
