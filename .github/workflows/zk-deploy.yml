@@ -25,6 +25,8 @@ on:
       APP_NAME_VAR:
         type: string
         default: 'APP_NAME'
+      HELM_ARGS:
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
@@ -35,6 +37,7 @@ env:
   APP_NAME_VAR: ${{ inputs.APP_NAME_VAR }}
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
   ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
+  HELM_ARGS: ${{ inputs.HELM_ARGS }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
@@ -66,6 +69,7 @@ jobs:
       - name: Deploy
         run: |-
           helm --install  \
+          $HELM_ARGS \
           --set=image.tag=$VERSION \
           --set=image.migrationTag=$MIGRATION_VERSION \
           --set=global.dockerBase=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$CLUSTERNAME \
