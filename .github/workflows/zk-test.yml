@@ -38,6 +38,18 @@ on:
       TEST12:
         type: string
         default: 'TEST12'
+      TEST13:
+        type: string
+        default: 'TEST13'
+      TEST14:
+        type: string
+        default: 'TEST14'
+      TEST15:
+        type: string
+        default: 'TEST15'
+      TEST16:
+        type: string
+        default: 'TEST16'
 env:
   TEST1: ${{ inputs.TEST1 }}
   TEST2: ${{ inputs.TEST2 }}
@@ -51,6 +63,10 @@ env:
   TEST10: ${{ inputs.TEST10 }}
   TEST11: ${{ inputs.TEST11 }}
   TEST12: ${{ inputs.TEST12 }}
+  TEST13: ${{ inputs.TEST13 }}
+  TEST14: ${{ inputs.TEST14 }}
+  TEST15: ${{ inputs.TEST15 }}
+  TEST16: ${{ inputs.TEST16 }}
 jobs:
   deploy:
     runs-on: zk-self-hosted
@@ -69,4 +85,8 @@ jobs:
           echo "TEST10=$TEST10"
           echo "TEST11=$TEST11"
           echo "TEST12=$TEST12"
+          echo "TEST13=$TEST13"
+          echo "TEST14=$TEST14"
+          echo "TEST15=$TEST15"
+          echo "TEST16=$TEST16"
       
