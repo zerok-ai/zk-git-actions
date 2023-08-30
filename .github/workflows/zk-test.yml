@@ -1,0 +1,72 @@
+name: deploy
+on:
+  workflow_call:
+    inputs:
+      TEST1:
+        type: string
+        default: 'TEST1'
+      TEST2:
+        type: string
+        default: 'TEST2'
+      TEST3:
+        type: string
+        default: 'TEST3'
+      TEST4:
+        type: string
+        default: 'TEST4'
+      TEST5:
+        type: string
+        default: 'TEST5'
+      TEST6:
+        type: string
+        default: 'TEST6'
+      TEST7:
+        type: string
+        default: 'TEST7'
+      TEST8:
+        type: string
+        default: 'TEST8'
+      TEST9:
+        type: string
+        default: 'TEST9'
+      TEST10:
+        type: string
+        default: 'TEST10'
+      TEST11:
+        type: string
+        default: 'TEST11'
+      TEST12:
+        type: string
+        default: 'TEST12'
+env:
+  TEST1: ${{ inputs.TEST1 }}
+  TEST2: ${{ inputs.TEST2 }}
+  TEST3: ${{ inputs.TEST3 }}
+  TEST4: ${{ inputs.TEST4 }}
+  TEST5: ${{ inputs.TEST5 }}
+  TEST6: ${{ inputs.TEST6 }}
+  TEST7: ${{ inputs.TEST7 }}
+  TEST8: ${{ inputs.TEST8 }}
+  TEST9: ${{ inputs.TEST9 }}
+  TEST10: ${{ inputs.TEST10 }}
+  TEST11: ${{ inputs.TEST11 }}
+  TEST12: ${{ inputs.TEST12 }}
+jobs:
+  deploy:
+    runs-on: zk-self-hosted
+    steps:
+      - name: print
+        run: |
+          echo "TEST1=$TEST1"
+          echo "TEST2=$TEST2"
+          echo "TEST3=$TEST3"
+          echo "TEST4=$TEST4"
+          echo "TEST5=$TEST5"
+          echo "TEST6=$TEST6"
+          echo "TEST7=$TEST7"
+          echo "TEST8=$TEST8"
+          echo "TEST9=$TEST9"
+          echo "TEST10=$TEST10"
+          echo "TEST11=$TEST11"
+          echo "TEST12=$TEST12"
+      
