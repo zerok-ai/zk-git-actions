@@ -27,6 +27,7 @@ on:
         default: 'APP_NAME'
       HELM_ARGS:
         type: string
+        default: ''
     secrets:
       GKE_SA_KEY:
         required: true
