@@ -16,9 +16,6 @@ on:
       ENVIRONMENT:
         type: string
         required: true
-      ZK_CLOUD_DOMAIN:
-        type: string
-        description: 'Zk cloud domain'
       NAMESPACE_VAR:
         type: string
         default: 'NAMESPACE'
@@ -37,7 +34,7 @@ env:
   VERSION: ${{ inputs.VERSION }}
   APP_NAME_VAR: ${{ inputs.APP_NAME_VAR }}
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
-  ZK_CLOUD_DOMAIN: ${{ inputs.ZK_CLOUD_DOMAIN }}
+  ZK_CLOUD_DOMAIN: ${{ vars.ZK_CLOUD_DOMAIN }}
   HELM_ARGS: ${{ inputs.HELM_ARGS }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
