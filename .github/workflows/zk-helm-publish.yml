@@ -18,6 +18,9 @@ on:
         type: string
       PROJECT_ID:
         type: string
+      APP_NAME_VAR:
+        type: string
+        default: 'APP_NAME'
     secrets:
       AWS_ACCESS_ID:
         required: true
@@ -25,6 +28,7 @@ on:
         required: true
 env:
   HELM_VERSION: ${{ inputs.HELM_VERSION }}
+  APP_NAME_VAR: ${{ inputs.APP_NAME_VAR }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
@@ -34,6 +38,8 @@ env:
 jobs:
   helm-publish:
     runs-on: zk-self-hosted
+    env:
+      APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
@@ -47,7 +53,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: s3 sync repo
-        run: aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/${{ vars.APP_NAME }} .
+        run: aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME .
 
       - name: prepare-helm-values
         run: |-
@@ -69,10 +75,10 @@ jobs:
               helm package --version $HELM_VERSION helm-charts
       - name: helm index
         run: |-
-              helm repo index ./ --url ${{ inputs.HELM_BUCKET_URL }}/zk-client/${{ vars.APP_NAME }}/
+              helm repo index ./ --url ${{ inputs.HELM_BUCKET_URL }}/zk-client/$APP_NAME/
       - name: s3 sync
         run: |-
-             aws s3 cp . ${{ inputs.HELM_BUCKET_NAME }}/zk-client/${{ vars.APP_NAME }}  --recursive --exclude "*" --include "index.yaml"  --include "*.tgz" --exclude "*/*"
+             aws s3 cp . ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME  --recursive --exclude "*" --include "index.yaml"  --include "*.tgz" --exclude "*/*"
 
       - name: Clear CF Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DIST_ID }} --paths "/*"
