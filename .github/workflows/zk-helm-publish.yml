@@ -53,7 +53,9 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: s3 sync repo
-        run: aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME .
+        run: |-
+          echo "APP_NAME=$APP_NAME"
+          aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME .
 
       - name: prepare-helm-values
         run: |-
