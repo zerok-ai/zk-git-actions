@@ -46,8 +46,8 @@ jobs:
       - name: Extract cluster and version
         id: extractClusterAndVersion
         run: |
-          GIT_TAG=${GIT_TAG#refs/*/}
           if [ "$DOCKER_TAG" == "" ]; then
+            GIT_TAG=${GIT_TAG#refs/*/}
             clusterName=$(echo "$GIT_TAG" | cut -d'/' -f2)
             version=$(echo "$GIT_TAG" | cut -d'/' -f3)
             semver_pattern="^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$"
