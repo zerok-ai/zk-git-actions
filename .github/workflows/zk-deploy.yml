@@ -65,7 +65,10 @@ jobs:
           location: '${{ env.GKE_ZONE }}'
 
       - name: Deploy
+        env:
+          CLOUD_DOMAIN: ${{ vars[format('{0}_CLOUD', env.CLUSTERNAME)] }}
         run: |-
+          echo "CLOUD_DOMAIN=$CLOUD_DOMAIN"
           helm --install  \
           $HELM_ARGS \
           --set=image.tag=$VERSION \
