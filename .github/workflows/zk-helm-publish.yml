@@ -14,6 +14,9 @@ on:
         default: 'poc'
       HELM_BUCKET_NAME:
         type: string
+      HELM_CHARTS_DIRECTORY:
+        type: string
+        default: 'helm-charts'
       HELM_BUCKET_URL:
         type: string
       PROJECT_ID:
@@ -34,6 +37,7 @@ env:
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
+  HELM_CHARTS_DIRECTORY: ${{ inputs.HELM_CHARTS_DIRECTORY }}
 
 jobs:
   helm-publish:
@@ -60,21 +64,21 @@ jobs:
       - name: prepare-helm-values
         run: |-
           DOCKER_REPO=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
-          perl -pi -e "s/tag: \"latest\"/tag: \"$HELM_VERSION\"/" helm-charts/values.yaml
-          perl -pi -e "s/migrationTag: \"latest\"/migrationTag: \"$HELM_VERSION\"/" helm-charts/values.yaml
-          perl -pi -e "s#dockerBase: \".*\"#dockerBase: \"$DOCKER_REPO\"#" helm-charts/values.yaml
+          perl -pi -e "s/tag: \"latest\"/tag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
+          perl -pi -e "s/migrationTag: \"latest\"/migrationTag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
+          perl -pi -e "s#dockerBase: \".*\"#dockerBase: \"$DOCKER_REPO\"#" $HELM_CHARTS_DIRECTORY/values.yaml
 
       - name: Uploading Helm Charts (for deploy)
         uses: actions/upload-artifact@v3
         with:
           name: helm-charts
           path: |
-            helm-charts
+            $HELM_CHARTS_DIRECTORY
 
       - name: helm package
         run: |-
-              helm dependency update helm-charts
-              helm package --version $HELM_VERSION helm-charts
+              helm dependency update $HELM_CHARTS_DIRECTORY
+              helm package --version $HELM_VERSION $HELM_CHARTS_DIRECTORY
       - name: helm index
         run: |-
               helm repo index ./ --url ${{ inputs.HELM_BUCKET_URL }}/zk-client/$APP_NAME/
