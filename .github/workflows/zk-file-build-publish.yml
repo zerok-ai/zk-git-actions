@@ -41,7 +41,7 @@ jobs:
 
       - name: Build
         run: |-
-          make ${{ inputs.MAKE_TARGET }}
+          VERSION=${{ inputs.VERSION }} make ${{ inputs.MAKE_TARGET }} 
           cp -r ${{ inputs.BUILD_OUTPUT_DIR }}/* $GIT_ACTIONS_WORKING_DIR
 
       - name: sync to S3
