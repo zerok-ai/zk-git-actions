@@ -1,0 +1,54 @@
+# Common action: to be called by other actions
+name: helm-publish
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        type: string
+      BUILD_OUTPUT_DIR:
+        type: string
+      MAKE_TARGET:
+        type: string
+        default: 'ci-cd-artifact'
+      VERSION:
+        type: string
+    secrets:
+      AWS_ACCESS_ID:
+        required: true
+      AWS_SECRET_KEY:
+        required: true
+jobs:
+  file-publish:
+    runs-on: zk-self-hosted
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    env:
+      GIT_ACTIONS_WORKING_DIR: "git-action-artifacts"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+#      - name: sync from S3
+#        run: |-
+#          mkdir $GIT_ACTIONS_WORKING_DIR
+#          aws s3 sync ${{ vars.FILE_BUCKET_NAME }}/{{ vars.S3_FOLDER_NAME }} $GIT_ACTIONS_WORKING_DIR
+
+      - name: Build
+        run: |-
+          make ${{ inputs.MAKE_TARGET }}
+          cp -r ${{ inputs.BUILD_OUTPUT_DIR }}/* $GIT_ACTIONS_WORKING_DIR
+
+      - name: sync to S3
+        run: |-
+          aws s3 cp $GIT_ACTIONS_WORKING_DIR ${{ vars.FILE_BUCKET_NAME }}/{{ vars.S3_FOLDER_NAME }}  --recursive --exclude "*" --include "zkcli-*"  --include "*.tgz" --exclude "*/*"
+
+      - name: Clear CF Cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DIST_ID }} --paths "/*"
+
+     
