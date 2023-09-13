@@ -28,6 +28,8 @@ on:
     secrets:
       GKE_SA_KEY:
         required: true
+      HELM_SECRETS_ARGS:
+        default: ''
 env:
   CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
@@ -36,6 +38,7 @@ env:
   MIGRATION_VERSION: ${{ inputs.MIGRATION_VERSION }}
   ZK_CLOUD_DOMAIN: ${{ vars.ZK_CLOUD_DOMAIN }}
   HELM_ARGS: ${{ inputs.HELM_ARGS }}
+  HELM_SECRETS_ARGS: ${{ secrets.HELM_SECRETS_ARGS }}
   GKE_ZONE: ${{ vars.GKE_ZONE }}
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
@@ -71,6 +74,7 @@ jobs:
           echo "CLOUD_DOMAIN=$CLOUD_DOMAIN"
           helm --install  \
           $HELM_ARGS \
+          $HELM_SECRETS_ARGS \
           --set=image.tag=$VERSION \
           --set=image.migrationTag=$MIGRATION_VERSION \
           --set=global.dockerBase=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$CLUSTERNAME \
