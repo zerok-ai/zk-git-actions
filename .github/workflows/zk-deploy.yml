@@ -29,7 +29,7 @@ on:
       GKE_SA_KEY:
         required: true
       HELM_SECRETS_ARGS:
-        default: ''
+        required: false
 env:
   CLUSTERNAME: ${{ inputs.CLUSTERNAME }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
