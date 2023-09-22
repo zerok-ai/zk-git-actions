@@ -56,24 +56,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: s3 sync repo
-        run: |-
-          echo "APP_NAME=$APP_NAME"
-          aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME .
-
       - name: prepare-helm-values
         run: |-
           DOCKER_REPO=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
           perl -pi -e "s/tag: \"latest\"/tag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
           perl -pi -e "s/migrationTag: \"latest\"/migrationTag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
           perl -pi -e "s#dockerBase: \".*\"#dockerBase: \"$DOCKER_REPO\"#" $HELM_CHARTS_DIRECTORY/values.yaml
-
-      - name: Uploading Helm Charts (for deploy)
-        uses: actions/upload-artifact@v3
-        with:
-          name: helm-charts
-          path: |
-            $HELM_CHARTS_DIRECTORY
 
       - name: helm package
         run: |-

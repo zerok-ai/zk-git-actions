@@ -5,12 +5,14 @@ on:
     inputs:
       ENVIRONMENT:
         type: string
-      BUILD_OUTPUT_DIR:
+      ARTIFACT_FOLDER_NAME:
         type: string
       MAKE_TARGET:
         type: string
         default: 'ci-cd-artifact'
       VERSION:
+        type: string
+      TARGET_FOLDER_NAME:
         type: string
     secrets:
       AWS_ACCESS_ID:
@@ -23,7 +25,7 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     env:
-      GIT_ACTIONS_WORKING_DIR: "git-action-artifacts"
+      ARTIFACT_FOLDER_NAME: ${{ inputs.ARTIFACT_FOLDER_NAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,19 +36,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-#      - name: sync from S3
-#        run: |-
-#          mkdir $GIT_ACTIONS_WORKING_DIR
-#          aws s3 sync ${{ vars.FILE_BUCKET_NAME }}/{{ vars.S3_FOLDER_NAME }} $GIT_ACTIONS_WORKING_DIR
-
       - name: Build
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          ARTIFACT_FOLDER_NAME: ${{ inputs.ARTIFACT_FOLDER_NAME }}
         run: |-
-          VERSION=${{ inputs.VERSION }} make ${{ inputs.MAKE_TARGET }} 
-          cp -r ${{ inputs.BUILD_OUTPUT_DIR }}/* $GIT_ACTIONS_WORKING_DIR
+          echo "VERSION from common action=${{ inputs.VERSION }}"
+          make ${{ inputs.MAKE_TARGET }}
 
       - name: sync to S3
         run: |-
-          aws s3 cp $GIT_ACTIONS_WORKING_DIR ${{ vars.FILE_BUCKET_NAME }}/{{ vars.S3_FOLDER_NAME }}  --recursive --exclude "*" --include "zkcli-*"  --include "*.tgz" --exclude "*/*"
+          aws s3 cp ${{ inputs.ARTIFACT_FOLDER_NAME }} ${{ vars.FILE_BUCKET_NAME }}/${{ vars.S3_FOLDER_NAME }}/${{ inputs.TARGET_FOLDER_NAME }} --recursive --include "*"
 
       - name: Clear CF Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DIST_ID }} --paths "/*"
