@@ -50,6 +50,6 @@ jobs:
           aws s3 cp ${{ inputs.ARTIFACT_FOLDER_NAME }} ${{ vars.FILE_BUCKET_NAME }}/${{ vars.S3_FOLDER_NAME }}/${{ inputs.TARGET_FOLDER_NAME }} --recursive --include "*"
 
       - name: Clear CF Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DIST_ID }} --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ vars.FILES_CF_DIST_ID }} --paths "/*"
 
      
