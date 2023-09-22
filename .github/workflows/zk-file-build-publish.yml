@@ -14,6 +14,7 @@ on:
         type: string
       TARGET_FOLDER_NAME:
         type: string
+        default: ''
     secrets:
       AWS_ACCESS_ID:
         required: true
