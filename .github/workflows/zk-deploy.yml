@@ -73,6 +73,7 @@ jobs:
         run: |-
           echo "CLOUD_DOMAIN=$CLOUD_DOMAIN"
           helm --install  \
+          --recreate-pods
           $HELM_ARGS \
           $HELM_SECRETS_ARGS \
           --set=image.tag=$VERSION \
