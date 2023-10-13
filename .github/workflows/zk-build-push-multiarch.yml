@@ -68,6 +68,10 @@ jobs:
         run: |
           gcloud auth configure-docker $DOCKER_REG --quiet
 
+      - name: Remove existing docker buildx
+        run: |
+          docker buildx rm multi-platform-builder || true
+
       - name: Init docker buildx
         run: |
           docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
