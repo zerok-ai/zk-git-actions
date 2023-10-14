@@ -1,0 +1,88 @@
+name: build-push
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        type: string
+      MAKE_TARGET:
+        type: string
+        default: 'ci-cd-build'
+      VERSION:
+        type: string
+      DOCKER_IDENTIFIER:
+        type: string
+      PROJECT_ID:
+        type: string
+      DOCKER_FILE_NAME:
+        type: string
+        default: 'Dockerfile'
+      APP_NAME_VAR:
+        type: string
+        default: 'APP_NAME'
+    secrets:
+      GKE_SA_KEY:
+        required: true
+env:
+  TOKEN: ${{ secrets.GITPAT }}
+  ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+
+
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+  DOCKER_REG: ${{ vars.DOCKER_REG }}
+  PROJECT_ID: ${{ inputs.PROJECT_ID }}
+  DOCKER_REPO: ${{ vars.DOCKER_REPO }}
+  APP_NAME: ${{ inputs.APP_NAME }}
+  VERSION: ${{ inputs.VERSION }}
+  DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
+
+jobs:
+
+  app-build:
+    runs-on: zk-self-hosted
+    env:
+      APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure git for private modules
+        run: git config --global url."https://$TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+      - name: Build
+        run: |
+          make ${{ inputs.MAKE_TARGET }}
+
+      - name: Test
+        run: |
+          ls
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GKE_SA_KEY }}'
+
+      - name: login to docker registry
+        run: |
+          gcloud auth configure-docker $DOCKER_REG --quiet
+
+      - name: Remove existing docker buildx
+        run: |
+          docker buildx rm multi-platform-builder || true
+
+      - name: Init docker buildx
+        run: |
+          docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
+
+      - name: Docker build and Push
+        run: |-
+          docker buildx build --platform=linux/arm64,linux/amd64 --push \
+          --tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$GITHUB_SHA" \
+          --tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$VERSION" \
+          -f ${{ inputs.DOCKER_FILE_NAME }} .
+
+      - name: Remove docker buildx
+        run: |
+          docker buildx rm multi-platform-builder
