@@ -58,11 +58,11 @@ jobs:
           echo "OVERRIDE_ZONE=$OVERRIDE_ZONE"
           if [[ -z $OVERRIDE_ZONE ]]
           then
-            echo "RESOLVED_ZONE=$OVERRIDE_ZONE" >> $GITHUB_OUTPUT
-            echo "resolvedzone0=$OVERRIDE_ZONE"
-          else
             echo "RESOLVED_ZONE=$GKE_ZONE" >> $GITHUB_OUTPUT
             echo "resolvedzone1=$GKE_ZONE"
+          else
+            echo "RESOLVED_ZONE=$OVERRIDE_ZONE" >> $GITHUB_OUTPUT
+            echo "resolvedzone0=$OVERRIDE_ZONE"
           fi
           
 
