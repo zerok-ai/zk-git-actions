@@ -43,11 +43,35 @@ env:
   DOCKER_REG: ${{ vars.DOCKER_REG }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
 jobs:
+  predeploy:
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+    runs-on: zk-self-hosted
+    outputs:
+      RESOLVED_ZONE: ${{ steps.extractZone.outputs.RESOLVED_ZONE }}
+    steps:
+      - name: Extract zone
+        id: extractZone
+        env:
+          OVERRIDE_ZONE: ${{ vars[format('{0}_ZONE', inputs.CLUSTERNAME)] }}
+        run: |
+          if [[ -z $OVERRIDE_ZONE ]]
+          then
+            echo "RESOLVED_ZONE=$OVERRIDE_ZONE" >> $GITHUB_OUTPUT
+            echo "resolvedzone=$OVERRIDE_ZONE"
+          else
+            echo "RESOLVED_ZONE=$GKE_ZONE" >> $GITHUB_OUTPUT
+            echo "resolvedzone=$GKE_ZONE"
+          fi
+          
+
   deploy:
+    needs: predeploy
     env:
       GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
       NAMESPACE: ${{ vars[format('{0}', inputs.NAMESPACE_VAR)] }}
       APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
+      GKE_ZONE: ${{ needs.predeploy.outputs.RESOLVED_ZONE }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     runs-on: zk-self-hosted
