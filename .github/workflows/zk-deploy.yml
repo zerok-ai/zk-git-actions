@@ -55,13 +55,14 @@ jobs:
         env:
           OVERRIDE_ZONE: ${{ vars[format('{0}_ZONE', inputs.CLUSTERNAME)] }}
         run: |
+          echo "OVERRIDE_ZONE=$OVERRIDE_ZONE"
           if [[ -z $OVERRIDE_ZONE ]]
           then
             echo "RESOLVED_ZONE=$OVERRIDE_ZONE" >> $GITHUB_OUTPUT
-            echo "resolvedzone=$OVERRIDE_ZONE"
+            echo "resolvedzone0=$OVERRIDE_ZONE"
           else
             echo "RESOLVED_ZONE=$GKE_ZONE" >> $GITHUB_OUTPUT
-            echo "resolvedzone=$GKE_ZONE"
+            echo "resolvedzone1=$GKE_ZONE"
           fi
           
 
