@@ -12,6 +12,9 @@ on:
       ENVIRONMENT:
         description: "Extracted environment"
         value: ${{ jobs.init.outputs.ENVIRONMENT }}
+      CLOUD_DOMAIN:
+        description: "Extracted cloud domain"
+        value: ${{ jobs.init.outputs.CLOUD_DOMAIN }}
       VERSION:
         description: "Extracted version"
         value: ${{ jobs.init.outputs.VERSION }}
@@ -37,6 +40,7 @@ jobs:
     runs-on: zk-self-hosted
     outputs:
       ENVIRONMENT: ${{ steps.extractEnvironment.outputs.EXTRACTED_ENVIRONMENT }}
+      CLOUD_DOMAIN: ${{ steps.extractCloudDomain.outputs.EXTRACTED_DOMAIN }}
       CLUSTERNAME: ${{ steps.extractClusterAndVersion.outputs.TAG_CLUSTERNAME }}
       VERSION: ${{ steps.extractClusterAndVersion.outputs.TAG_VERSION }}
       HELM_BUCKET_NAME: ${{ vars.PRIVATE_HELM_S3_BUCKET }}
@@ -75,3 +79,13 @@ jobs:
           echo "EXTRACTED_ENVIRONMENT=$ORG_VARIABLE" >> $GITHUB_OUTPUT
           echo "$ORG_VARIABLE_NAME"
           echo "$ORG_VARIABLE"
+
+      - name: Extract cloud domain
+        id: extractCloudDomain
+        env:
+          CLOUD_DOMAIN_VARIABLE_NAME: ${{ format('{0}_DOMAIN', steps.extractClusterAndVersion.outputs.TAG_CLUSTERNAME_CAPITAL) }}
+          CLOUD_DOMAIN_VARIABLE: ${{ vars[format('{0}_DOMAIN', steps.extractClusterAndVersion.outputs.TAG_CLUSTERNAME_CAPITAL)] }}
+        run: |
+          echo "EXTRACTED_DOMAIN=$CLOUD_DOMAIN_VARIABLE" >> $GITHUB_OUTPUT
+          echo "$CLOUD_DOMAIN_VARIABLE_NAME"
+          echo "$CLOUD_DOMAIN_VARIABLE"
