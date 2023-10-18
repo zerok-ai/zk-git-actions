@@ -56,6 +56,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: s3 sync repo
+        run: |-
+          echo "APP_NAME=$APP_NAME"
+          aws s3 sync ${{ inputs.HELM_BUCKET_NAME }}/zk-client/$APP_NAME/index.yaml .
+
       - name: prepare-helm-values
         run: |-
           DOCKER_REPO=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
