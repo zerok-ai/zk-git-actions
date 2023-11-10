@@ -19,8 +19,9 @@ on:
       APP_NAME_VAR:
         type: string
         default: 'APP_NAME'
-      FLAG_ID:
+      FLAG_ID_VAR:
         type: string
+        default: 'SANDBOX_FLAG_ID'
         required: false
     secrets:
       GKE_SA_KEY:
@@ -44,7 +45,7 @@ jobs:
     runs-on: zk-self-hosted
     env:
       APP_NAME: ${{ vars[format('{0}', inputs.APP_NAME_VAR)] }}
-      FLAG_ID: ${{ inputs.FLAG_ID }}
+      FLAG_ID: ${{ vars[format('{0}', inputs.FLAG_ID_VAR)] }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
