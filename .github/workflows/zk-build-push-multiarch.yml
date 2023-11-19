@@ -51,7 +51,7 @@ jobs:
         run: git config --global url."https://$TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Install Git LFS
-        uses: git-lfs/install@v1
+        uses: git lfs install
 
       - name: Build
         run: |
