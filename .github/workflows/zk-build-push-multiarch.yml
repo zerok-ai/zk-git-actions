@@ -50,6 +50,9 @@ jobs:
       - name: Configure git for private modules
         run: git config --global url."https://$TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
+      - name: Install Git LFS
+        uses: git-lfs/install@v1
+
       - name: Build
         run: |
           make ${{ inputs.MAKE_TARGET }}
