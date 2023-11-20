@@ -53,6 +53,9 @@ jobs:
       - name: Install Git LFS
         run: git lfs install
 
+      - name: Pull Git LFS
+        run: git lfs pull
+
       - name: Build
         run: |
           make ${{ inputs.MAKE_TARGET }}
