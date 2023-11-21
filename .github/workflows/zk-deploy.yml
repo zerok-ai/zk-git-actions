@@ -97,6 +97,7 @@ jobs:
           CLOUD_DOMAIN: ${{ vars[format('{0}_CLOUD', env.CLUSTERNAME)] }}
         run: |-
           echo "CLOUD_DOMAIN=$CLOUD_DOMAIN"
+          helm dependency update ./helm-charts
           helm --install  \
           $HELM_ARGS \
           $HELM_SECRETS_ARGS \
