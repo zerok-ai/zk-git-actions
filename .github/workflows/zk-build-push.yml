@@ -57,10 +57,6 @@ jobs:
         run: |
           make ${{ inputs.MAKE_TARGET }}
 
-      - name: Test
-        run: |
-          ls
-
   docker-push:
     needs: build
     runs-on: zk-self-hosted
@@ -70,13 +66,14 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
-      - name: 'Authenticate to Google Cloud'
+      - name: Authenticate to Google Cloud
         if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'gcp' }}
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: '${{ secrets.GKE_SA_KEY }}'
 
       - name: Configure AWS credentials
+        if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'aws' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_ID }}
