@@ -6,6 +6,9 @@ on:
       HELM_VERSION:
         type: string
         required: true
+      DOCKER_REG:
+        type: string
+        required: true
       DOCKER_IDENTIFIER:
         type: string
         required: true
@@ -36,10 +39,10 @@ env:
   HELM_VERSION: ${{ inputs.HELM_VERSION }}
   APP_NAME_VAR: ${{ inputs.APP_NAME_VAR }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-  DOCKER_REG: ${{ vars.DOCKER_REG }}
   S3_DIR: ${{ inputs.S3_DIR }}
   PROJECT_ID: ${{ inputs.PROJECT_ID }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
+  DOCKER_REG: ${{ inputs.DOCKER_REG }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
   HELM_CHARTS_DIRECTORY: ${{ inputs.HELM_CHARTS_DIRECTORY }}
 
@@ -68,7 +71,7 @@ jobs:
 
       - name: prepare-helm-values
         run: |-
-          DOCKER_REPO=$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER
+          DOCKER_REPO=$DOCKER_REG/$DOCKER_REPO/$DOCKER_IDENTIFIER
           perl -pi -e "s/tag: \"latest\"/tag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
           perl -pi -e "s/migrationTag: \"latest\"/migrationTag: \"$HELM_VERSION\"/" $HELM_CHARTS_DIRECTORY/values.yaml
           perl -pi -e "s#dockerBase: \".*\"#dockerBase: \"$DOCKER_REPO\"#" $HELM_CHARTS_DIRECTORY/values.yaml
@@ -86,5 +89,4 @@ jobs:
 
       - name: Clear CF Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ vars.CF_DIST_ID }} --paths "/*"
-
-     
+    

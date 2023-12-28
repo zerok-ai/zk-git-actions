@@ -4,7 +4,7 @@ on:
     inputs:
       GIT_TAG:
         type: string
-      GKE_CLUSTER:
+      CLUSTER_NAME:
         type: string
       DOCKER_TAG:
         type: string
@@ -27,14 +27,17 @@ on:
       HELM_BUCKET_URL:
         description: "Helm bucket url"
         value: ${{ jobs.init.outputs.HELM_BUCKET_URL }}
-      PROJECT_ID:
-        description: "Gcloud Project Id"
-        value: ${{ jobs.init.outputs.PROJECT_ID }}
+      DOCKER_REG:
+        description: "Docker registry"
+        value: ${{ jobs.init.outputs.DOCKER_REG }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
-  GKE_CLUSTER: ${{ inputs.GKE_CLUSTER }}
+  CLUSTER_NAME: ${{ inputs.CLUSTER_NAME }}
   DOCKER_TAG: ${{ inputs.DOCKER_TAG }}
 
+  GCLOUD_PROJECT_ID: ${{ vars.DEV_GCLOUD_PROJECT_ID }}
+  DOCKER_REG_GCP: ${{ vars.DOCKER_REG_GCP }}
+  DOCKER_REG_AWS: ${{ vars.DOCKER_REG_AWS }}
 jobs:
   init:
     runs-on: zk-self-hosted
@@ -45,7 +48,7 @@ jobs:
       VERSION: ${{ steps.extractClusterAndVersion.outputs.TAG_VERSION }}
       HELM_BUCKET_NAME: ${{ vars.PRIVATE_HELM_S3_BUCKET }}
       HELM_BUCKET_URL: ${{ vars.PRIVATE_HELM_S3_BUCKET_URL }}
-      PROJECT_ID: ${{ vars.DEV_GCLOUD_PROJECT_ID }}
+      DOCKER_REG: ${{ steps.setDockerReg.outputs.DOCKER_REG }}
     steps:
       - name: Extract cluster and version
         id: extractClusterAndVersion
@@ -63,9 +66,9 @@ jobs:
               exit 1  # Exit with failure
             fi
           else
-            echo "TAG_CLUSTERNAME=$GKE_CLUSTER" >> $GITHUB_OUTPUT
+            echo "TAG_CLUSTERNAME=$CLUSTER_NAME" >> $GITHUB_OUTPUT
             echo "TAG_VERSION=$DOCKER_TAG" >> $GITHUB_OUTPUT
-            clusterName=$GKE_CLUSTER
+            clusterName=$CLUSTER_NAME
           fi
           TAG_CLUSTERNAME_CAPITAL=$(echo "$clusterName" | tr '[:lower:]' '[:upper:]')
           echo "TAG_CLUSTERNAME_CAPITAL=$TAG_CLUSTERNAME_CAPITAL" >> $GITHUB_OUTPUT
@@ -89,3 +92,13 @@ jobs:
           echo "EXTRACTED_DOMAIN=$CLOUD_DOMAIN_VARIABLE" >> $GITHUB_OUTPUT
           echo "$CLOUD_DOMAIN_VARIABLE_NAME"
           echo "$CLOUD_DOMAIN_VARIABLE"
+
+      - name: Set DOCKER_REG Variable
+        id: setDockerReg
+        run: |
+          if [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "gcp" ]; then
+            echo "DOCKER_REG=$DOCKER_REG_GCP/$GCLOUD_PROJECT_ID" >> $GITHUB_OUTPUT
+          elif [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "aws" ]; then
+            echo "DOCKER_REG=$DOCKER_REG_AWS" >> $GITHUB_OUTPUT
+          fi
+          echo "$DOCKER_REG"

@@ -21,13 +21,17 @@ on:
       HELM_BUCKET_URL:
         description: "Helm bucket url"
         value: ${{ jobs.init.outputs.HELM_BUCKET_URL }}
-      PROJECT_ID:
-        description: "Gcloud Project Id"
-        value: ${{ jobs.init.outputs.PROJECT_ID }}
+      DOCKER_REG:
+        description: "Docker registry"
+        value: ${{ jobs.init.outputs.DOCKER_REG }}
 env:
   GIT_TAG: ${{ inputs.GIT_TAG }}
   ENV: ${{ inputs.ENVIRONMENT }}
   DOCKER_TAG: ${{ inputs.DOCKER_TAG }}
+
+  GCLOUD_PROJECT_ID: ${{ vars.PROD_GCLOUD_PROJECT_ID }}
+  DOCKER_REG_GCP: ${{ vars.DOCKER_REG_GCP }}
+  DOCKER_REG_AWS: ${{ vars.DOCKER_REG_AWS }}
 
 jobs:
   init:
@@ -62,3 +66,13 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
+
+      - name: Set DOCKER_REG Variable
+        id: setDockerReg
+        run: |
+          if [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "gcp" ]; then
+            echo "DOCKER_REG=$DOCKER_REG_GCP/$GCLOUD_PROJECT_ID" >> $GITHUB_OUTPUT
+          elif [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "aws" ]; then
+            echo "DOCKER_REG=$DOCKER_REG_AWS" >> $GITHUB_OUTPUT
+          fi
+          echo "$DOCKER_REG"
