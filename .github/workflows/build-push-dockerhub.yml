@@ -74,4 +74,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ GIT_SHA_TAG }}, ${{ VERSION_TAG }}
+          tags: ${{ env.GIT_SHA_TAG }}, ${{ env.VERSION_TAG }}
