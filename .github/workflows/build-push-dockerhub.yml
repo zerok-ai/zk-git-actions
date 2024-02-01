@@ -71,4 +71,3 @@ jobs:
         with:
           push: true
           tags: ${{ env.GIT_SHA_TAG }}, ${{ env.VERSION_TAG }}
-          tags: muditkmathur/zk-git-actions:latest
