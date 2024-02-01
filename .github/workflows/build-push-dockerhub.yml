@@ -57,6 +57,7 @@ jobs:
       REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
       CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
       GIT_SHA_TAG: ${{ format('{0}/{1}/{2}/{3}:{4}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
+      VERSION_TAG: ${{ format('{0}/{1}/{2}/{3}:{4}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
@@ -73,4 +74,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: $GIT_SHA_TAG
+          tags: ${{ GIT_SHA_TAG }}, ${{ VERSION_TAG }}
