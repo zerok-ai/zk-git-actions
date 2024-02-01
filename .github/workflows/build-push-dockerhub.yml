@@ -11,8 +11,6 @@ on:
         type: string
       DOCKER_IDENTIFIER:
         type: string
-      DOCKER_REG:
-        type: string
       DOCKER_FILE_NAME:
         type: string
         default: 'Dockerfile'
@@ -27,9 +25,7 @@ on:
 env:
   TOKEN: ${{ secrets.GITPAT }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
-
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
-  DOCKER_REG: ${{ inputs.DOCKER_REG }}
   VERSION: ${{ inputs.VERSION }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
 
@@ -54,10 +50,10 @@ jobs:
     needs: build
     runs-on: zk-self-hosted
     env:
-      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', vars.DOCKER_REG_DOCKERHUB, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
       CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
-      GIT_SHA_TAG: ${{ format('{0}/{1}/{2}/{3}:{4}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
-      VERSION_TAG: ${{ format('{0}/{1}/{2}/{3}:{4}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
+      GIT_SHA_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
+      VERSION_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
@@ -75,3 +71,4 @@ jobs:
         with:
           push: true
           tags: ${{ env.GIT_SHA_TAG }}, ${{ env.VERSION_TAG }}
+          tags: muditkmathur/zk-git-actions:latest
