@@ -72,6 +72,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags:
-            - "${REPO_NAME}:${GITHUB_SHA}"
-            - "${REPO_NAME}:${VERSION}"
+          tags: "${REPO_NAME}:${GITHUB_SHA}"
