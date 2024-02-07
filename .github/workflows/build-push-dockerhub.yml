@@ -35,6 +35,11 @@ jobs:
     runs-on: zk-self-hosted
     environment:
       name: ${{ inputs.ENVIRONMENT }}
+    env:
+      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', vars.DOCKER_REG_DOCKERHUB, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+      GIT_SHA_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
+      VERSION_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,21 +47,21 @@ jobs:
       - name: Configure git for private modules
         run: git config --global url."https://$TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
-      - name: Build
+      - name: Build and Push
         run: |
           make ${{ inputs.MAKE_TARGET }}
 
-  docker-push:
-    needs: build
-    runs-on: zk-self-hosted
-    env:
-      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', vars.DOCKER_REG_DOCKERHUB, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
-      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
-      GIT_SHA_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
-      VERSION_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
-    environment:
-      name: ${{ inputs.ENVIRONMENT }}
-    steps:
+#  docker-push:
+#    needs: build
+#    runs-on: zk-self-hosted
+#    env:
+#      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', vars.DOCKER_REG_DOCKERHUB, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+#      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+#      GIT_SHA_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], github.sha ) }}
+#      VERSION_TAG: ${{ format('{0}/{1}:{2}', vars.DOCKER_REG_DOCKERHUB, vars[format('{0}', inputs.APP_NAME_VAR)], inputs.VERSION ) }}
+#    environment:
+#      name: ${{ inputs.ENVIRONMENT }}
+#    steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
