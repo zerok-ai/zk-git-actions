@@ -81,5 +81,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
+          context: .
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.GIT_SHA_TAG }}, ${{ env.VERSION_TAG }}
