@@ -82,7 +82,7 @@ jobs:
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+        uses: 'google-github-actions/auth@v1.3.0'
         with:
           credentials_json: '${{ env.GKE_SA_KEY }}'
 
