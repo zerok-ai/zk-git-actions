@@ -96,8 +96,7 @@ jobs:
       - name: Set DOCKER_REG Variable
         id: setDockerReg
         run: |
-          echo "happy V day $DOCKER_REG_CURRENT_CLOUD"
-          echo "$DOCKER_REG_CURRENT_CLOUD"
+          echo "DOCKER_REG=$DOCKER_REG_CURRENT_CLOUD"
           if [ "$DOCKER_REG_CURRENT_CLOUD" == "gcp" ]; then
             echo "DOCKER_REG=$DOCKER_REG_GCP/$GCLOUD_PROJECT_ID" >> $GITHUB_OUTPUT
             echo "docker registry current cloud is GCP"
