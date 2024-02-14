@@ -96,16 +96,15 @@ jobs:
       - name: Set DOCKER_REG Variable
         id: setDockerReg
         run: |
-          echo "DOCKER_REG_CURRENT_CLOUD=$DOCKER_REG_CURRENT_CLOUD"
-          if [ "$DOCKER_REG_CURRENT_CLOUD" == "gcp" ]; then
+          if [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "gcp" ]; then
             echo "DOCKER_REG=$DOCKER_REG_GCP/$GCLOUD_PROJECT_ID" >> $GITHUB_OUTPUT
             echo "docker registry current cloud is GCP"
             echo "$DOCKER_REG_GCP"
-          elif [ "$DOCKER_REG_CURRENT_CLOUD" == "aws" ]; then
+          elif [ "${{ vars.DOCKER_REG_CURRENT_CLOUD }}" == "aws" ]; then
             echo "DOCKER_REG=$DOCKER_REG_AWS" >> $GITHUB_OUTPUT
             echo "docker registry current cloud is AWS"
             echo "$DOCKER_REG_AWS"
-          else 
+          else
             echo "DOCKER_REG_CURRENT_CLOUD is not set"
             exit 1
           fi
