@@ -58,8 +58,8 @@ jobs:
     needs: build
     runs-on: zk-self-hosted
     env:
-      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}/{4}', $DOCKER_REG, $DOCKER_REPO, $PROJECT_ID, $DOCKER_IDENTIFIER, vars[format('{0}', $APP_NAME_VAR)] ) }}
-      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', $DOCKER_REPO, $PROJECT_ID, $DOCKER_IDENTIFIER, vars[format('{0}', $APP_NAME_VAR)] ) }}
+      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}/{4}', env.DOCKER_REG, env.DOCKER_REPO, env.PROJECT_ID, env.DOCKER_IDENTIFIER, vars[format('{0}', env.APP_NAME_VAR)] ) }}
+      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', env.DOCKER_REPO, env.PROJECT_ID, env.DOCKER_IDENTIFIER, vars[format('{0}', env.APP_NAME_VAR)] ) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
