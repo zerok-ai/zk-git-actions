@@ -20,22 +20,18 @@ on:
         type: string
         default: 'APP_NAME'
     secrets:
-      GKE_SA_KEY:
-        required: true
       AWS_ACCESS_ID:
         required: true
       AWS_SECRET_KEY:
         required: true
 env:
   TOKEN: ${{ secrets.GITPAT }}
-  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
-  PROJECT_ID: ${{ vars.PROJECT_ID }}
+
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   DOCKER_REG: ${{ inputs.DOCKER_REG }}
   VERSION: ${{ inputs.VERSION }}
   DOCKER_IDENTIFIER: ${{ inputs.DOCKER_IDENTIFIER }}
-  APP_NAME_VAR : ${{ inputs.APP_NAME_VAR }}
 
 jobs:
 
@@ -58,20 +54,13 @@ jobs:
     needs: build
     runs-on: zk-self-hosted
     env:
-      VAR_APP_NAME: ${{ format('{0}', inputs.APP_NAME_VAR) }}
-      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, $VAR_APP_NAME ) }}
-      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', $DOCKER_REPO, $PROJECT_ID, inputs.DOCKER_IDENTIFIER, $VAR_APP_NAME ) }}
+      REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
-      - name: Authenticate to Google Cloud
-        if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'gcp' }}
-        uses: 'google-github-actions/auth@v0'
-        with:
-          credentials_json: '${{ secrets.GKE_SA_KEY }}'
 
       - name: Configure AWS credentials
-        if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'aws' }}
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_ID }}
@@ -79,7 +68,6 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Public ECR
-        if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'aws' }}
         uses: docker/login-action@v3
         with:
           registry: public.ecr.aws
@@ -89,28 +77,21 @@ jobs:
         env:
           AWS_REGION: ${{ vars.AWS_REGION }}
 
-      - name: Remove existing docker buildx
-        run: |
-          docker buildx rm multi-platform-builder || true
+      - name: Docker build
+        run: |-
+          docker build -f ${{ inputs.DOCKER_FILE_NAME }} --tag "$REPO_NAME:$GITHUB_SHA" .
 
-      - name: Init docker buildx
-        run: |
-          docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
+      - name: Docker Tag
+        run: |-
+          docker tag "${REPO_NAME}:${GITHUB_SHA}" "${REPO_NAME}:${VERSION}"
 
       - name: Create AWS repo
-        if: ${{ vars.DOCKER_REG_CURRENT_CLOUD == 'aws' }}
         env:
           AWS_REGION: ${{ vars.AWS_REGION }}
         run: |-
           aws ecr-public describe-repositories --repository-names ${CREATE_REPO_NAME} || aws ecr-public create-repository --repository-name ${CREATE_REPO_NAME}
 
-      - name: Docker build and Push
+      - name: Docker push
         run: |-
-          docker buildx build --platform=linux/arm64,linux/amd64 --push \
-          --tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$GITHUB_SHA" \
-          --tag "$DOCKER_REG/$PROJECT_ID/$DOCKER_REPO/$DOCKER_IDENTIFIER/$APP_NAME:$VERSION" \
-          -f ${{ inputs.DOCKER_FILE_NAME }} .
-
-      - name: Remove docker buildx
-        run: |
-          docker buildx rm multi-platform-builder
+          docker image push "${REPO_NAME}:${GITHUB_SHA}"
+          docker image push "${REPO_NAME}:${VERSION}"
