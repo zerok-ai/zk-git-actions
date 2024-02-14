@@ -105,7 +105,6 @@ jobs:
             echo "DOCKER_REG=$DOCKER_REG_AWS" >> $GITHUB_OUTPUT
             echo "docker registry current cloud is AWS"
             echo "$DOCKER_REG_AWS"
-          fi
           else 
             echo "DOCKER_REG_CURRENT_CLOUD is not set"
             exit 1
