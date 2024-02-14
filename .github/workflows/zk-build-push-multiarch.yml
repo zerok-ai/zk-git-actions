@@ -30,7 +30,7 @@ env:
   TOKEN: ${{ secrets.GITPAT }}
   GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
   DOCKER_REPO: ${{ vars.DOCKER_REPO }}
-
+  PROJECT_ID: ${{ vars.PROJECT_ID }}
   ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
   DOCKER_REG: ${{ inputs.DOCKER_REG }}
   VERSION: ${{ inputs.VERSION }}
@@ -58,7 +58,7 @@ jobs:
     runs-on: zk-self-hosted
     env:
       REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', inputs.DOCKER_REG, vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
-      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}', vars.DOCKER_REPO, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
+      CREATE_REPO_NAME: ${{ format('{0}/{1}/{2}/{3}', vars.DOCKER_REPO, vars.PROJECT_ID, inputs.DOCKER_IDENTIFIER, vars[format('{0}', inputs.APP_NAME_VAR)] ) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
     steps:
